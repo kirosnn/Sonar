@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="new-tab.css">
+</head>
+<body>
+    <div class="container">
+
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Ask a question. Type / to use a shortcut." id="search-input">
+        </div>
+
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const quickLinks = document.querySelectorAll('.quick-link');
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const input = e.target.value.trim();
+                if (input) {
+                    let url = input;
+
+                    if (url.startsWith('sonar://')) {
+                        window.location.href = url;
+                    } else if (url.includes('.') && !url.includes(' ')) {
+                        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                            url = 'https://' + url;
+                        }
+                        window.location.href = url;
+                    } else {
+                        url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+                        window.location.href = url;
+                    }
+                }
+            }
+        });
+
+        quickLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const url = link.getAttribute('data-url');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+
+        searchInput.focus();
+    </script>
+</body>
+</html>

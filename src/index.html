@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonar</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="browser-container">
+        <div class="tabs-bar">
+            <div class="tabs-container" id="tabs-container">
+                <div class="tab active" data-tab-id="1">
+                    <span class="tab-title">New Tab</span>
+                    <button class="tab-close">×</button>
+                </div>
+                <button id="add-tab-btn" class="add-tab-btn" title="New Tab">+</button>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="navigation-buttons">
+                <button id="back-btn" class="nav-btn" title="Back">
+                    <svg width="20" height="20" viewBox="0 0 20 20">
+                        <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button id="forward-btn" class="nav-btn" title="Forward">
+                    <svg width="20" height="20" viewBox="0 0 20 20">
+                        <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button id="reload-btn" class="nav-btn" title="Reload">
+                    <svg width="20" height="20" viewBox="0 0 20 20">
+                        <path d="M16 10C16 13.3137 13.3137 16 10 16C6.68629 16 4 13.3137 4 10C4 6.68629 6.68629 4 10 4C11.8 4 13.4 4.8 14.5 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        <path d="M14 3V6H11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="url-bar-container">
+                <input type="text" id="url-bar" class="url-bar" placeholder="Search or enter address">
+            </div>
+        </div>
+
+        <div class="content-area">
+            <webview id="webview-1" class="webview active" src="sonar://new-tab" partition="persist:sonar"></webview>
+        </div>
+    </div>
+
+    <script type="module" src="../renderer.js"></script>
+</body>
+</html>
