@@ -20,7 +20,7 @@ async function initializeBrowser() {
 
   webviewManager = new WebviewManager(null, themeManager);
   tabManager = new TabManager(webviewManager, themeManager);
-  navigationManager = new NavigationManager(tabManager, webviewManager);
+  navigationManager = new NavigationManager(tabManager, webviewManager, themeManager);
   tooltipManager = new TooltipManager();
 
   webviewManager.tabManager = tabManager;
@@ -30,6 +30,14 @@ async function initializeBrowser() {
   await webviewManager.initialize();
   navigationManager.initialize();
   tooltipManager.initialize();
+
+  themeManager.onThemeChange(() => {
+    tabManager.refreshAllFavicons();
+    const activeTab = tabManager.getActiveTab();
+    if (activeTab) {
+      navigationManager.updateFavicon(activeTab.url);
+    }
+  });
 
   tabManager.updateUrlBar();
 }

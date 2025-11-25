@@ -1,8 +1,6 @@
 const { app, BrowserWindow, protocol, ipcMain, nativeTheme, systemPreferences, net, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { AssemblyAI } = require('assemblyai');
-require('dotenv').config();
 
 app.commandLine.appendSwitch('disable-http-cache');
 app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
@@ -132,8 +130,14 @@ function registerSonarProtocol() {
 
     if (pathname === 'new-tab' || pathname === 'new-tab/') {
       filePath = path.join(__dirname, 'pages', 'new-tab.html');
+    } else if (pathname.startsWith('new-tab/')) {
+      filePath = path.join(__dirname, 'pages', pathname);
+    } else if (pathname.startsWith('data/')) {
+      filePath = path.join(__dirname, pathname);
     } else if (pathname.endsWith('/')) {
       filePath = path.join(__dirname, 'pages', pathname.slice(0, -1) + '.html');
+    } else if (!path.extname(pathname)) {
+      filePath = path.join(__dirname, 'pages', pathname + '.html');
     } else {
       filePath = path.join(__dirname, 'pages', pathname);
     }
@@ -144,8 +148,12 @@ function registerSonarProtocol() {
     if (fs.existsSync(filePath)) {
       return net.fetch('file://' + filePath);
     } else {
+      console.log('File not found, trying 404 page');
       const fallbackPath = path.join(__dirname, 'pages', '404.html');
-      return net.fetch('file://' + fallbackPath);
+      if (fs.existsSync(fallbackPath)) {
+        return net.fetch('file://' + fallbackPath);
+      }
+      return new Response('Not found', { status: 404 });
     }
   };
 
@@ -217,36 +225,4 @@ ipcMain.handle('get-new-tab-path', async (event) => {
 ipcMain.handle('close-app', async (event) => {
   app.quit();
   return { success: true };
-});
-
-ipcMain.handle('transcribe-audio', async (event, base64Audio) => {
-  try {
-    const apiKey = process.env.ASSEMBLYAI_API_KEY;
-
-    if (!apiKey) {
-      throw new Error('AssemblyAI API key not found');
-    }
-
-    const client = new AssemblyAI({ apiKey });
-
-    const buffer = Buffer.from(base64Audio, 'base64');
-    const tempFilePath = path.join(app.getPath('temp'), `voice-${Date.now()}.webm`);
-    fs.writeFileSync(tempFilePath, buffer);
-
-    const transcript = await client.transcripts.transcribe({
-      audio: tempFilePath,
-      language_code: 'en'
-    });
-
-    fs.unlinkSync(tempFilePath);
-
-    if (transcript.status === 'error') {
-      throw new Error(transcript.error);
-    }
-
-    return transcript.text;
-  } catch (error) {
-    console.error('Transcription error:', error);
-    throw error;
-  }
 });

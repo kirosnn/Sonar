@@ -1,0 +1,722 @@
+[
+  {
+    "domain": "telegram.org",
+    "title": "Telegram"
+  },
+  {
+    "domain": "discord.com",
+    "title": "Discord"
+  },
+  {
+    "domain": "x.com",
+    "title": "X"
+  },
+  {
+    "domain": "instagram.com",
+    "title": "Instagram"
+  },
+  {
+    "domain": "twitter.com",
+    "title": "Twitter"
+  },
+  {
+    "domain": "google.com",
+    "title": "Google"
+  },
+  {
+    "domain": "facebook.com",
+    "title": "Facebook"
+  },
+  {
+    "domain": "zara.com",
+    "title": "Zara"
+  },
+  {
+    "domain": "whatsapp.com",
+    "title": "WhatsApp"
+  },
+  {
+    "domain": "linkedin.com",
+    "title": "LinkedIn"
+  },
+  {
+    "domain": "snapchat.com",
+    "title": "Snapchat"
+  },
+  {
+    "domain": "nike.com",
+    "title": "Nike"
+  },
+  {
+    "domain": "hm.com",
+    "title": "H&M"
+  },
+  {
+    "domain": "youtube.com",
+    "title": "YouTube"
+  },
+  {
+    "domain": "pinterest.com",
+    "title": "Pinterest"
+  },
+  {
+    "domain": "tiktok.com",
+    "title": "TikTok"
+  },
+  {
+    "domain": "reddit.com",
+    "title": "Reddit"
+  },
+  {
+    "domain": "adidas.com",
+    "title": "Adidas"
+  },
+  {
+    "domain": "shein.com",
+    "title": "Shein"
+  },
+  {
+    "domain": "uniqlo.com",
+    "title": "Uniqlo"
+  },
+  {
+    "domain": "vinted.fr",
+    "title": "Vinted"
+  },
+  {
+    "domain": "apple.com",
+    "title": "Apple"
+  },
+  {
+    "domain": "veepee.fr",
+    "title": "Veepee"
+  },
+  {
+    "domain": "lemonde.fr",
+    "title": "Le Monde"
+  },
+  {
+    "domain": "bfmtv.com",
+    "title": "BFMTV"
+  },
+  {
+    "domain": "lenovo.com",
+    "title": "Lenovo"
+  },
+  {
+    "domain": "microsoft.com",
+    "title": "Microsoft"
+  },
+  {
+    "domain": "franceinfo.fr",
+    "title": "franceinfo"
+  },
+  {
+    "domain": "sony.com",
+    "title": "Sony"
+  },
+  {
+    "domain": "lefigaro.fr",
+    "title": "Le Figaro"
+  },
+  {
+    "domain": "samsung.com",
+    "title": "Samsung"
+  },
+  {
+    "domain": "asus.com",
+    "title": "ASUS"
+  },
+  {
+    "domain": "dell.com",
+    "title": "Dell"
+  },
+  {
+    "domain": "20minutes.fr",
+    "title": "20 Minutes"
+  },
+  {
+    "domain": "liberation.fr",
+    "title": "Libération"
+  },
+  {
+    "domain": "huffingtonpost.fr",
+    "title": "HuffPost"
+  },
+  {
+    "domain": "leparisien.fr",
+    "title": "Le Parisien"
+  },
+  {
+    "domain": "marianne.net",
+    "title": "Marianne"
+  },
+  {
+    "domain": "lexpress.fr",
+    "title": "L'Express"
+  },
+  {
+    "domain": "challenges.fr",
+    "title": "Challenges"
+  },
+  {
+    "domain": "lepoint.fr",
+    "title": "Le Point"
+  },
+  {
+    "domain": "cnews.fr",
+    "title": "CNews"
+  },
+  {
+    "domain": "france24.com",
+    "title": "France 24"
+  },
+  {
+    "domain": "rfi.fr",
+    "title": "RFI"
+  },
+  {
+    "domain": "bbc.com",
+    "title": "BBC"
+  },
+  {
+    "domain": "lci.fr",
+    "title": "LCI"
+  },
+  {
+    "domain": "bbc.co.uk",
+    "title": "BBC UK"
+  },
+  {
+    "domain": "apnews.com",
+    "title": "AP News"
+  },
+  {
+    "domain": "nytimes.com",
+    "title": "The New York Times"
+  },
+  {
+    "domain": "wsj.com",
+    "title": "The Wall Street Journal"
+  },
+  {
+    "domain": "cnn.com",
+    "title": "CNN"
+  },
+  {
+    "domain": "techcrunch.com",
+    "title": "TechCrunch"
+  },
+  {
+    "domain": "theguardian.com",
+    "title": "The Guardian"
+  },
+  {
+    "domain": "forbes.com",
+    "title": "Forbes"
+  },
+  {
+    "domain": "ft.com",
+    "title": "Financial Times"
+  },
+  {
+    "domain": "businessinsider.com",
+    "title": "Business Insider"
+  },
+  {
+    "domain": "usatoday.com",
+    "title": "USA Today"
+  },
+  {
+    "domain": "reuters.com",
+    "title": "Reuters"
+  },
+  {
+    "domain": "arstechnica.com",
+    "title": "Ars Technica"
+  },
+  {
+    "domain": "theverge.com",
+    "title": "The Verge"
+  },
+  {
+    "domain": "economist.com",
+    "title": "The Economist"
+  },
+  {
+    "domain": "mashable.com",
+    "title": "Mashable"
+  },
+  {
+    "domain": "github.com",
+    "title": "GitHub"
+  },
+  {
+    "domain": "wired.com",
+    "title": "Wired"
+  },
+  {
+    "domain": "hp.com",
+    "title": "HP"
+  },
+  {
+    "domain": "engadget.com",
+    "title": "Engadget"
+  },
+  {
+    "domain": "cnet.com",
+    "title": "CNET"
+  },
+  {
+    "domain": "stackoverflow.com",
+    "title": "Stack Overflow"
+  },
+  {
+    "domain": "bitbucket.org",
+    "title": "Bitbucket"
+  },
+  {
+    "domain": "zdnet.com",
+    "title": "ZDNet"
+  },
+  {
+    "domain": "dev.to",
+    "title": "DEV Community"
+  },
+  {
+    "domain": "bloomberg.com",
+    "title": "Bloomberg"
+  },
+  {
+    "domain": "gitlab.com",
+    "title": "GitLab"
+  },
+  {
+    "domain": "medium.com",
+    "title": "Medium"
+  },
+  {
+    "domain": "wikipedia.org",
+    "title": "Wikipedia"
+  },
+  {
+    "domain": "hackernews.com",
+    "title": "Hacker News"
+  },
+  {
+    "domain": "rottentomatoes.com",
+    "title": "Rotten Tomatoes"
+  },
+  {
+    "domain": "allocine.fr",
+    "title": "AlloCiné"
+  },
+  {
+    "domain": "metacritic.com",
+    "title": "Metacritic"
+  },
+  {
+    "domain": "senscritique.com",
+    "title": "SensCritique"
+  },
+  {
+    "domain": "imdb.com",
+    "title": "IMDb"
+  },
+  {
+    "domain": "wikihow.com",
+    "title": "wikiHow"
+  },
+  {
+    "domain": "disneyplus.com",
+    "title": "Disney+"
+  },
+  {
+    "domain": "primevideo.com",
+    "title": "Prime Video"
+  },
+  {
+    "domain": "hulu.com",
+    "title": "Hulu"
+  },
+  {
+    "domain": "soundcloud.com",
+    "title": "SoundCloud"
+  },
+  {
+    "domain": "vimeo.com",
+    "title": "Vimeo"
+  },
+  {
+    "domain": "quora.com",
+    "title": "Quora"
+  },
+  {
+    "domain": "hbomax.com",
+    "title": "HBO Max"
+  },
+  {
+    "domain": "ouest-france.fr",
+    "title": "Ouest-France"
+  },
+  {
+    "domain": "twitch.tv",
+    "title": "Twitch"
+  },
+  {
+    "domain": "spotify.com",
+    "title": "Spotify"
+  },
+  {
+    "domain": "dailymotion.com",
+    "title": "Dailymotion"
+  },
+  {
+    "domain": "aliexpress.com",
+    "title": "AliExpress"
+  },
+  {
+    "domain": "deezer.com",
+    "title": "Deezer"
+  },
+  {
+    "domain": "amazon.com",
+    "title": "Amazon"
+  },
+  {
+    "domain": "applemusic.com",
+    "title": "Apple Music"
+  },
+  {
+    "domain": "etsy.com",
+    "title": "Etsy"
+  },
+  {
+    "domain": "cdiscount.com",
+    "title": "Cdiscount"
+  },
+  {
+    "domain": "amazon.fr",
+    "title": "Amazon France"
+  },
+  {
+    "domain": "ebay.com",
+    "title": "eBay"
+  },
+  {
+    "domain": "fnac.com",
+    "title": "Fnac"
+  },
+  {
+    "domain": "tripadvisor.com",
+    "title": "TripAdvisor"
+  },
+  {
+    "domain": "ebay.fr",
+    "title": "eBay France"
+  },
+  {
+    "domain": "ldlc.com",
+    "title": "LDLC"
+  },
+  {
+    "domain": "booking.com",
+    "title": "Booking.com"
+  },
+  {
+    "domain": "darty.com",
+    "title": "Darty"
+  },
+  {
+    "domain": "airbnb.com",
+    "title": "Airbnb"
+  },
+  {
+    "domain": "airbnb.fr",
+    "title": "Airbnb France"
+  },
+  {
+    "domain": "blablacar.fr",
+    "title": "BlaBlaCar"
+  },
+  {
+    "domain": "leboncoin.fr",
+    "title": "Leboncoin"
+  },
+  {
+    "domain": "netflix.com",
+    "title": "Netflix"
+  },
+  {
+    "domain": "seloger.com",
+    "title": "SeLoger"
+  },
+  {
+    "domain": "skyscanner.com",
+    "title": "Skyscanner"
+  },
+  {
+    "domain": "sncf.com",
+    "title": "SNCF"
+  },
+  {
+    "domain": "uber.com",
+    "title": "Uber"
+  },
+  {
+    "domain": "logic-immo.com",
+    "title": "Logic-Immo"
+  },
+  {
+    "domain": "indeed.com",
+    "title": "Indeed"
+  },
+  {
+    "domain": "pap.fr",
+    "title": "PAP"
+  },
+  {
+    "domain": "pole-emploi.fr",
+    "title": "Pôle Emploi"
+  },
+  {
+    "domain": "apec.fr",
+    "title": "APEC"
+  },
+  {
+    "domain": "laposte.net",
+    "title": "Laposte.net"
+  },
+  {
+    "domain": "indeed.fr",
+    "title": "Indeed France"
+  },
+  {
+    "domain": "welcometothejungle.com",
+    "title": "Welcome to the Jungle"
+  },
+  {
+    "domain": "laposte.fr",
+    "title": "La Poste"
+  },
+  {
+    "domain": "protonmail.com",
+    "title": "ProtonMail"
+  },
+  {
+    "domain": "monster.fr",
+    "title": "Monster"
+  },
+  {
+    "domain": "orange.fr",
+    "title": "Orange"
+  },
+  {
+    "domain": "gmail.com",
+    "title": "Gmail"
+  },
+  {
+    "domain": "sfr.fr",
+    "title": "SFR"
+  },
+  {
+    "domain": "free.fr",
+    "title": "Free"
+  },
+  {
+    "domain": "outlook.com",
+    "title": "Outlook"
+  },
+  {
+    "domain": "bouyguestelecom.fr",
+    "title": "Bouygues Telecom"
+  },
+  {
+    "domain": "impots.gouv.fr",
+    "title": "Impôts"
+  },
+  {
+    "domain": "yahoo.com",
+    "title": "Yahoo"
+  },
+  {
+    "domain": "parcoursup.fr",
+    "title": "Parcoursup"
+  },
+  {
+    "domain": "ameli.fr",
+    "title": "Ameli"
+  },
+  {
+    "domain": "caf.fr",
+    "title": "CAF"
+  },
+  {
+    "domain": "urssaf.fr",
+    "title": "URSSAF"
+  },
+  {
+    "domain": "duckduckgo.com",
+    "title": "DuckDuckGo"
+  },
+  {
+    "domain": "service-public.fr",
+    "title": "Service Public"
+  },
+  {
+    "domain": "education.gouv.fr",
+    "title": "Éducation Nationale"
+  },
+  {
+    "domain": "yahoo.fr",
+    "title": "Yahoo France"
+  },
+  {
+    "domain": "bing.com",
+    "title": "Bing"
+  },
+  {
+    "domain": "ouigo.com",
+    "title": "Ouigo"
+  },
+  {
+    "domain": "qwant.com",
+    "title": "Qwant"
+  },
+  {
+    "domain": "weather.com",
+    "title": "Weather.com"
+  },
+  {
+    "domain": "doctolib.fr",
+    "title": "Doctolib"
+  },
+  {
+    "domain": "vidal.fr",
+    "title": "Vidal"
+  },
+  {
+    "domain": "doctissimo.fr",
+    "title": "Doctissimo"
+  },
+  {
+    "domain": "ecosia.org",
+    "title": "Ecosia"
+  },
+  {
+    "domain": "webmd.com",
+    "title": "WebMD"
+  },
+  {
+    "domain": "reverso.net",
+    "title": "Reverso"
+  },
+  {
+    "domain": "mayoclinic.org",
+    "title": "Mayo Clinic"
+  },
+  {
+    "domain": "translate.google.com",
+    "title": "Google Translate"
+  },
+  {
+    "domain": "accuweather.com",
+    "title": "AccuWeather"
+  },
+  {
+    "domain": "deepl.com",
+    "title": "DeepL"
+  },
+  {
+    "domain": "trello.com",
+    "title": "Trello"
+  },
+  {
+    "domain": "asana.com",
+    "title": "Asana"
+  },
+  {
+    "domain": "wordreference.com",
+    "title": "WordReference"
+  },
+  {
+    "domain": "teams.microsoft.com",
+    "title": "Microsoft Teams"
+  },
+  {
+    "domain": "slack.com",
+    "title": "Slack"
+  },
+  {
+    "domain": "figma.com",
+    "title": "Figma"
+  },
+  {
+    "domain": "zoom.us",
+    "title": "Zoom"
+  },
+  {
+    "domain": "canva.com",
+    "title": "Canva"
+  },
+  {
+    "domain": "notion.so",
+    "title": "Notion"
+  },
+  {
+    "domain": "icloud.com",
+    "title": "iCloud"
+  },
+  {
+    "domain": "meet.google.com",
+    "title": "Google Meet"
+  },
+  {
+    "domain": "expedia.com",
+    "title": "Expedia"
+  },
+  {
+    "domain": "drive.google.com",
+    "title": "Google Drive"
+  },
+  {
+    "domain": "onedrive.com",
+    "title": "OneDrive"
+  },
+  {
+    "domain": "dropbox.com",
+    "title": "Dropbox"
+  },
+  {
+    "domain": "etudiant.gouv.fr",
+    "title": "Étudiant.gouv"
+  },
+  {
+    "domain": "zalando.fr",
+    "title": "Zalando"
+  },
+  {
+    "domain": "meteo.fr",
+    "title": "Météo France"
+  },
+  {
+    "domain": "voyages-sncf.com",
+    "title": "Voyages SNCF"
+  },
+  {
+    "domain": "asos.com",
+    "title": "ASOS"
+  },
+  {
+    "domain": "acer.com",
+    "title": "Acer"
+  },
+  {
+    "domain": "washingtonpost.com",
+    "title": "The Washington Post"
+  },
+  {
+    "domain": "boulanger.com",
+    "title": "Boulanger"
+  }
+]

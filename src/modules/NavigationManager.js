@@ -1,11 +1,12 @@
 import { SuggestionsManager } from './SuggestionsManager.js';
-import { VoiceInputManager } from './VoiceInputManager.js';
 
 export class NavigationManager {
-  constructor(tabManager, webviewManager) {
+  constructor(tabManager, webviewManager, themeManager) {
     this.tabManager = tabManager;
     this.webviewManager = webviewManager;
+    this.themeManager = themeManager;
     this.urlBar = null;
+    this.favicon = null;
     this.fullUrl = '';
     this.pageTitle = '';
     this.suggestionsManager = new SuggestionsManager();
@@ -14,31 +15,11 @@ export class NavigationManager {
     this.currentSuggestions = [];
     this.debounceTimer = null;
     this.voiceActive = false;
-    this.voiceInputManager = new VoiceInputManager();
-    this.setupVoiceCallbacks();
-  }
-
-  setupVoiceCallbacks() {
-    this.voiceInputManager.onRecordingStart = () => {
-      console.log('Recording started');
-    };
-
-    this.voiceInputManager.onRecordingStop = () => {
-      console.log('Recording stopped');
-    };
-
-    this.voiceInputManager.onTranscriptionComplete = (text) => {
-      this.handleVoiceTranscription(text);
-    };
-
-    this.voiceInputManager.onError = (error) => {
-      console.error('Voice input error:', error);
-      this.toggleVoiceInput();
-    };
   }
 
   initialize() {
     this.urlBar = document.getElementById('url-bar');
+    this.favicon = document.getElementById('site-favicon');
     this.suggestionsDropdown = document.getElementById('suggestions-dropdown');
 
     document.getElementById('back-btn').addEventListener('click', () => this.goBack());
@@ -73,34 +54,19 @@ export class NavigationManager {
     if (this.voiceActive) {
       micBtn.classList.add('active');
       this.urlBar.classList.add('voice-active');
-      this.urlBar.placeholder = 'Listening...';
       this.hideSuggestions();
-      this.voiceInputManager.startRecording();
     } else {
       micBtn.classList.remove('active');
       this.urlBar.classList.remove('voice-active');
-      this.urlBar.placeholder = 'Search or enter address';
-      this.voiceInputManager.stopRecording();
     }
-  }
-
-  handleVoiceTranscription(text) {
-    if (text && text.trim().length > 0) {
-      this.urlBar.value = text.trim();
-      this.navigate(text.trim());
-    }
-
-    this.voiceActive = false;
-    const micBtn = document.getElementById('mic-btn');
-    micBtn.classList.remove('active');
-    this.urlBar.classList.remove('voice-active');
-    this.urlBar.placeholder = 'Search or enter address';
   }
 
   handleUrlBarFocus() {
-    if (this.fullUrl) {
+    if (this.fullUrl && !this.fullUrl.startsWith('sonar://new-tab') && this.fullUrl !== 'new-tab' && !this.fullUrl.includes('new-tab.html')) {
       this.urlBar.value = this.fullUrl;
       this.urlBar.select();
+    } else {
+      this.urlBar.value = '';
     }
   }
 
@@ -141,7 +107,9 @@ export class NavigationManager {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (this.selectedSuggestionIndex >= 0 && this.currentSuggestions[this.selectedSuggestionIndex]) {
-        this.navigateToUrl(this.currentSuggestions[this.selectedSuggestionIndex]);
+        const suggestion = this.currentSuggestions[this.selectedSuggestionIndex];
+        const navigationText = typeof suggestion === 'object' ? suggestion.text : suggestion;
+        this.navigateToUrl(navigationText);
       } else {
         const url = e.target.value;
         this.navigateToUrl(url);
@@ -160,6 +128,22 @@ export class NavigationManager {
     }
   }
 
+  highlightMatches(text, query) {
+    if (!query || !text) return text;
+
+    const queryLower = query.toLowerCase();
+    const textLower = text.toLowerCase();
+    const index = textLower.indexOf(queryLower);
+
+    if (index === -1) return text;
+
+    const before = text.substring(0, index);
+    const match = text.substring(index, index + query.length);
+    const after = text.substring(index + query.length);
+
+    return `${before}<span class="highlight">${match}</span>${after}`;
+  }
+
   showSuggestions(suggestions) {
     this.currentSuggestions = suggestions;
     this.selectedSuggestionIndex = -1;
@@ -171,12 +155,98 @@ export class NavigationManager {
 
     this.suggestionsDropdown.innerHTML = '';
 
+    const query = this.urlBar.value;
+
     suggestions.forEach((suggestion, index) => {
       const item = document.createElement('div');
       item.className = 'suggestion-item';
-      item.textContent = suggestion;
+
+      const displayText = typeof suggestion === 'object' ? suggestion.display : suggestion;
+      const navigationText = typeof suggestion === 'object' ? suggestion.text : suggestion;
+      const type = typeof suggestion === 'object' ? suggestion.type : 'search';
+
+      if (type === 'site') {
+        const favicon = document.createElement('img');
+        favicon.className = 'suggestion-favicon';
+        const domain = navigationText;
+        try {
+          const faviconUrl = domain.startsWith('http')
+            ? `${new URL(domain).origin}/favicon.ico`
+            : `https://${domain}/favicon.ico`;
+          favicon.src = faviconUrl;
+          favicon.onerror = () => {
+            favicon.style.display = 'none';
+            const searchIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            searchIcon.setAttribute('class', 'suggestion-icon');
+            searchIcon.setAttribute('width', '16');
+            searchIcon.setAttribute('height', '16');
+            searchIcon.setAttribute('viewBox', '0 0 16 16');
+            searchIcon.setAttribute('fill', 'none');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', 'M7 12C9.76142 12 12 9.76142 12 7C12 4.23858 9.76142 2 7 2C4.23858 2 2 4.23858 2 7C2 9.76142 4.23858 12 7 12Z');
+            path.setAttribute('stroke', 'currentColor');
+            path.setAttribute('stroke-width', '1.5');
+            const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path2.setAttribute('d', 'M10.5 10.5L14 14');
+            path2.setAttribute('stroke', 'currentColor');
+            path2.setAttribute('stroke-width', '1.5');
+            path2.setAttribute('stroke-linecap', 'round');
+            searchIcon.appendChild(path);
+            searchIcon.appendChild(path2);
+            item.insertBefore(searchIcon, item.firstChild);
+          };
+          favicon.onload = () => {
+            favicon.classList.add('visible');
+          };
+          item.appendChild(favicon);
+        } catch (e) {
+          const searchIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          searchIcon.setAttribute('class', 'suggestion-icon');
+          searchIcon.setAttribute('width', '16');
+          searchIcon.setAttribute('height', '16');
+          searchIcon.setAttribute('viewBox', '0 0 16 16');
+          searchIcon.setAttribute('fill', 'none');
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', 'M7 12C9.76142 12 12 9.76142 12 7C12 4.23858 9.76142 2 7 2C4.23858 2 2 4.23858 2 7C2 9.76142 4.23858 12 7 12Z');
+          path.setAttribute('stroke', 'currentColor');
+          path.setAttribute('stroke-width', '1.5');
+          const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path2.setAttribute('d', 'M10.5 10.5L14 14');
+          path2.setAttribute('stroke', 'currentColor');
+          path2.setAttribute('stroke-width', '1.5');
+          path2.setAttribute('stroke-linecap', 'round');
+          searchIcon.appendChild(path);
+          searchIcon.appendChild(path2);
+          item.appendChild(searchIcon);
+        }
+      } else {
+        const searchIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        searchIcon.setAttribute('class', 'suggestion-icon');
+        searchIcon.setAttribute('width', '16');
+        searchIcon.setAttribute('height', '16');
+        searchIcon.setAttribute('viewBox', '0 0 16 16');
+        searchIcon.setAttribute('fill', 'none');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M7 12C9.76142 12 12 9.76142 12 7C12 4.23858 9.76142 2 7 2C4.23858 2 2 4.23858 2 7C2 9.76142 4.23858 12 7 12Z');
+        path.setAttribute('stroke', 'currentColor');
+        path.setAttribute('stroke-width', '1.5');
+        const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path2.setAttribute('d', 'M10.5 10.5L14 14');
+        path2.setAttribute('stroke', 'currentColor');
+        path2.setAttribute('stroke-width', '1.5');
+        path2.setAttribute('stroke-linecap', 'round');
+        searchIcon.appendChild(path);
+        searchIcon.appendChild(path2);
+        item.appendChild(searchIcon);
+      }
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'suggestion-text';
+      textSpan.innerHTML = this.highlightMatches(displayText, query);
+      item.appendChild(textSpan);
+
       item.addEventListener('click', () => {
-        this.navigateToUrl(suggestion);
+        this.navigateToUrl(navigationText);
         this.hideSuggestions();
       });
       this.suggestionsDropdown.appendChild(item);
@@ -205,7 +275,9 @@ export class NavigationManager {
 
     this.selectedSuggestionIndex = (this.selectedSuggestionIndex + 1) % items.length;
     items[this.selectedSuggestionIndex].classList.add('selected');
-    this.urlBar.value = this.currentSuggestions[this.selectedSuggestionIndex];
+
+    const suggestion = this.currentSuggestions[this.selectedSuggestionIndex];
+    this.urlBar.value = typeof suggestion === 'object' ? suggestion.text : suggestion;
   }
 
   selectPreviousSuggestion() {
@@ -221,7 +293,9 @@ export class NavigationManager {
       : this.selectedSuggestionIndex - 1;
 
     items[this.selectedSuggestionIndex].classList.add('selected');
-    this.urlBar.value = this.currentSuggestions[this.selectedSuggestionIndex];
+
+    const suggestion = this.currentSuggestions[this.selectedSuggestionIndex];
+    this.urlBar.value = typeof suggestion === 'object' ? suggestion.text : suggestion;
   }
 
   extractDomain(url) {
@@ -253,9 +327,55 @@ export class NavigationManager {
     return domain;
   }
 
+  updateFavicon(url) {
+    console.log('NavigationManager updateFavicon called with URL:', url);
+
+    if (!url || url === 'new-tab' || url.includes('new-tab.html') || url.startsWith('sonar://new-tab')) {
+      const isDark = this.themeManager.isDarkTheme();
+      const faviconName = isDark ? 'white.ico' : 'black.ico';
+      const newTabFaviconPath = `sonar://new-tab/icons/${faviconName}`;
+      console.log('Setting new-tab favicon in URL bar:', newTabFaviconPath, 'isDark:', isDark);
+      this.favicon.src = newTabFaviconPath;
+      this.favicon.classList.add('visible');
+      this.urlBar.classList.add('has-favicon');
+
+      this.favicon.onerror = () => {
+        console.log('New tab favicon failed to load in URL bar');
+        this.favicon.classList.remove('visible');
+        this.urlBar.classList.remove('has-favicon');
+      };
+
+      this.favicon.onload = () => {
+        console.log('New tab favicon loaded successfully in URL bar');
+      };
+      return;
+    }
+
+    try {
+      const urlObj = new URL(url);
+      const faviconUrl = `${urlObj.origin}/favicon.ico`;
+      console.log('Setting website favicon in URL bar:', faviconUrl);
+
+      this.favicon.src = faviconUrl;
+      this.favicon.classList.add('visible');
+      this.urlBar.classList.add('has-favicon');
+
+      this.favicon.onerror = () => {
+        console.log('Website favicon failed to load in URL bar:', faviconUrl);
+        this.favicon.classList.remove('visible');
+        this.urlBar.classList.remove('has-favicon');
+      };
+    } catch (e) {
+      console.log('Error parsing URL in updateFavicon:', e);
+      this.favicon.classList.remove('visible');
+      this.urlBar.classList.remove('has-favicon');
+    }
+  }
+
   setUrlBarValue(url, title = '') {
     this.fullUrl = url;
     this.pageTitle = title;
+    this.updateFavicon(url);
     if (document.activeElement !== this.urlBar) {
       this.urlBar.value = this.formatUrlForDisplay(url, title);
     }

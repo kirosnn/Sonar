@@ -1,339 +1,220 @@
 export class SuggestionsManager {
   constructor() {
-    this.prioritySuggestions = [
-      "dernières actualités",
-      "latest news",
-      "actualité france",
-      "world news",
-      "breaking news",
-      "actualité internationale",
-      "international news",
-      "actualité politique",
-      "political news",
-      "actualité économie",
-      "economy news",
-      "business news",
-      "actualité santé",
-      "health news",
-      "actualité sport",
-      "sports news",
-      "actualité culture",
-      "culture news",
-      "actualité science",
-      "science news",
-      "actualité technologie",
-      "technology news",
-      "actualité environnement",
-      "environment news",
-      "climate news",
-      "actualité climat",
-      "actualité société",
-      "society news",
-      "actualité justice",
-      "justice news",
-      "actualité éducation",
-      "education news",
-      "financial news",
-      "actualité finance",
-      "stock market",
-      "bourse",
-      "crypto news",
-      "actualité crypto",
-      "bitcoin news",
-      "elections",
-      "élections",
-      "guerre ukraine",
-      "ukraine war",
-      "middle east news",
-      "actualité moyen orient",
-      "china news",
-      "actualité chine",
-      "usa news",
-      "actualité usa",
-      "europe news",
-      "actualité europe",
-      "africa news",
-      "actualité afrique",
-      "asia news",
-      "actualité asie",
-      "chatgpt",
-      "openai",
-      "artificial intelligence",
-      "intelligence artificielle",
-      "ia nouveautés",
-      "ai news",
-      "ai tools",
-      "machine learning",
-      "apprentissage automatique",
-      "deep learning",
-      "neural networks",
-      "nouveautés tech",
-      "tech news",
-      "latest smartphones",
-      "nouveaux smartphones",
-      "comparatif pc",
-      "meilleurs laptops",
-      "best laptops",
-      "apple news",
-      "actualité apple",
-      "samsung news",
-      "google news",
-      "microsoft news",
-      "meta news",
-      "amazon news",
-      "tesla news",
-      "actualité tesla",
-      "electric cars",
-      "voitures électriques",
-      "space news",
-      "actualité espace",
-      "spacex",
-      "nasa",
-      "sorties cinéma",
-      "new movies",
-      "films à l'affiche",
-      "top movies",
-      "meilleurs films",
-      "top séries",
-      "best series",
-      "meilleures séries",
-      "netflix nouveautés",
-      "netflix new releases",
-      "disney plus",
-      "prime video",
-      "streaming news",
-      "actualité streaming",
-      "new games",
-      "sorties jeux video",
-      "nouveaux jeux",
-      "gaming news",
-      "actualité gaming",
-      "playstation",
-      "xbox",
-      "nintendo",
-      "pc gaming",
-      "esports",
-      "football news",
-      "actualité football",
-      "basketball news",
-      "tennis news",
-      "formula 1",
-      "formule 1",
-      "rugby news",
-      "olympics",
-      "jeux olympiques",
-      "world cup",
-      "coupe du monde",
-      "champions league",
-      "ligue 1",
-      "premier league",
-      "météo",
-      "weather",
-      "weather forecast",
-      "prévisions météo",
-      "convertisseur",
-      "converter",
-      "traduction",
-      "translation",
-      "translate",
-      "recipes",
-      "recettes rapides",
-      "quick recipes",
-      "recettes faciles",
-      "easy recipes",
-      "healthy recipes",
-      "recettes santé",
-      "cooking tips",
-      "conseils cuisine",
-      "coronavirus",
-      "covid news",
-      "pandemic news",
-      "vaccination",
-      "medical research",
-      "recherche médicale",
-      "job market",
-      "marché emploi",
-      "remote work",
-      "télétravail",
-      "real estate",
-      "immobilier",
-      "housing market",
-      "marché immobilier",
-      "inflation",
-      "interest rates",
-      "taux d'intérêt",
-      "recession",
-      "récession",
-      "energy crisis",
-      "crise énergétique",
-      "renewable energy",
-      "énergies renouvelables",
-      "solar power",
-      "wind power",
-      "nuclear energy",
-      "énergie nucléaire",
-      "cybersecurity",
-      "cybersécurité",
-      "data privacy",
-      "vie privée",
-      "quantum computing",
-      "informatique quantique",
-      "5g network",
-      "réseau 5g",
-      "autonomous vehicles",
-      "véhicules autonomes",
-      "robotics",
-      "robotique",
-      "biotechnology",
-      "biotechnologie",
-      "gene therapy",
-      "thérapie génique",
-      "space exploration",
-      "exploration spatiale",
-      "mars mission",
-      "mission mars",
-      "satellite news",
-      "natural disasters",
-      "catastrophes naturelles",
-      "earthquake",
-      "tremblement de terre",
-      "hurricane",
-      "ouragan",
-      "wildfire",
-      "incendie",
-      "flooding",
-      "inondations",
-      "drought",
-      "sécheresse",
-      "immigration",
-      "refugees",
-      "réfugiés",
-      "human rights",
-      "droits de l'homme",
-      "social justice",
-      "justice sociale",
-      "inequality",
-      "inégalités",
-      "poverty",
-      "pauvreté",
-      "hunger",
-      "faim dans le monde",
-      "water crisis",
-      "crise de l'eau",
-      "biodiversity",
-      "biodiversité",
-      "endangered species",
-      "espèces menacées",
-      "deforestation",
-      "déforestation",
-      "ocean pollution",
-      "pollution océans"
-    ];
-
-    this.popularSites = [
-      "google.com",
-      "youtube.com",
-      "facebook.com",
-      "lemonde.fr",
-      "lefigaro.fr",
-      "bfmtv.com",
-      "franceinfo.fr",
-      "ouest-france.fr",
-      "20minutes.fr",
-      "allocine.fr",
-      "senscritique.com",
-      "deezer.com",
-      "spotify.com",
-      "sfr.fr",
-      "orange.fr",
-      "laposte.fr",
-      "impots.gouv.fr",
-      "service-public.fr",
-      "ameli.fr",
-      "sncf.com",
-      "reddit.com",
-      "twitter.com",
-      "x.com",
-      "instagram.com",
-      "tiktok.com",
-      "github.com",
-      "stackoverflow.com",
-      "wikipedia.org",
-      "imdb.com",
-      "amazon.com",
-      "bing.com",
-      "yahoo.com",
-      "cnn.com",
-      "bbc.com",
-      "nytimes.com",
-      "washingtonpost.com",
-      "bloomberg.com",
-      "forbes.com"
-    ];
-
+    this.prioritySuggestions = [];
+    this.popularSites = [];
     this.googleCache = new Map();
+    this.pendingRequests = new Map();
+    this.initialized = false;
+  }
+
+  async initialize() {
+    if (this.initialized) return;
+
+    try {
+      const [priorityRes, sitesRes] = await Promise.all([
+        fetch('sonar://data/priority-suggestions.json'),
+        fetch('sonar://data/popular-sites.json')
+      ]);
+
+      this.prioritySuggestions = await priorityRes.json();
+      this.popularSites = await sitesRes.json();
+      this.initialized = true;
+    } catch (error) {
+      console.error('Failed to load suggestions data:', error);
+      this.prioritySuggestions = [];
+      this.popularSites = [];
+    }
+  }
+
+  isSiteUrl(text) {
+    const urlPattern = /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+    return urlPattern.test(text) || text.includes('.');
+  }
+
+  findSiteInfo(domain) {
+    const cleanDomain = domain.toLowerCase().trim();
+    return this.popularSites.find(site =>
+      site.domain.toLowerCase() === cleanDomain ||
+      site.domain.toLowerCase().startsWith(cleanDomain + '.') ||
+      cleanDomain === site.domain.toLowerCase().replace(/\.[^.]+$/, '')
+    );
+  }
+
+  findSiteByPartialMatch(query) {
+    if (query.length < 3) return null;
+
+    const q = query.toLowerCase().trim();
+    return this.popularSites.find(site => {
+      const domainWithoutTld = site.domain.toLowerCase().split('.')[0];
+      return domainWithoutTld === q ||
+             site.domain.toLowerCase() === q + '.com' ||
+             site.domain.toLowerCase() === q + '.fr' ||
+             site.domain.toLowerCase() === q + '.org' ||
+             site.domain.toLowerCase() === q + '.net';
+    });
   }
 
   async getGoogleSuggestions(query) {
-    if (!query) return [];
+    if (!query || query.length < 2) return [];
 
     if (this.googleCache.has(query)) {
       return this.googleCache.get(query);
     }
 
-    try {
-      const url = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(query)}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      const suggestions = data[1] || [];
-
-      this.googleCache.set(query, suggestions);
-
-      return suggestions;
-    } catch (error) {
-      console.error('Error fetching Google suggestions:', error);
-      return [];
+    if (this.pendingRequests.has(query)) {
+      return this.pendingRequests.get(query);
     }
+
+    const requestPromise = (async () => {
+      try {
+        const url = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(query)}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          signal: AbortSignal.timeout(3000)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const data = await response.json();
+        const suggestions = Array.isArray(data[1]) ? data[1] : [];
+
+        this.googleCache.set(query, suggestions);
+
+        if (this.googleCache.size > 100) {
+          const firstKey = this.googleCache.keys().next().value;
+          this.googleCache.delete(firstKey);
+        }
+
+        return suggestions;
+      } catch (error) {
+        console.error('Error fetching Google suggestions:', error);
+        return [];
+      } finally {
+        this.pendingRequests.delete(query);
+      }
+    })();
+
+    this.pendingRequests.set(query, requestPromise);
+    return requestPromise;
   }
 
-  hasGoogleResultsForPrefix(query) {
-    if (query.length < 2) return false;
+  scoreMatch(text, query) {
+    const textLower = text.toLowerCase();
+    const queryLower = query.toLowerCase();
 
-    const prefix = query.substring(0, 2).toLowerCase();
+    if (textLower === queryLower) return 1000;
+    if (textLower.startsWith(queryLower + ' ')) return 900;
+    if (textLower.startsWith(queryLower)) return 800;
+    if (textLower.split(' ').some(word => word.startsWith(queryLower))) return 700;
+    if (textLower.includes(' ' + queryLower)) return 600;
+    if (textLower.includes(queryLower)) return 500;
+    return 0;
+  }
 
-    if (this.googleCache.has(prefix)) {
-      const results = this.googleCache.get(prefix);
-      return results && results.length > 0;
-    }
+  getLocalMatches(query) {
+    if (!query || query.length < 2) return [];
 
-    return false;
+    const q = query.toLowerCase();
+
+    const priorityMatches = this.prioritySuggestions
+      .map(text => ({
+        text: text,
+        score: this.scoreMatch(text, q)
+      }))
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => ({
+        type: 'search',
+        text: item.text,
+        display: item.text
+      }));
+
+    const siteMatches = this.popularSites
+      .map(site => {
+        const domainScore = this.scoreMatch(site.domain, q);
+        const titleScore = this.scoreMatch(site.title, q);
+        const maxScore = Math.max(domainScore, titleScore);
+        return {
+          site: site,
+          score: maxScore
+        };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => ({
+        type: 'site',
+        text: item.site.domain,
+        display: `${item.site.title} — ${item.site.domain}`
+      }));
+
+    const allMatches = [...priorityMatches, ...siteMatches]
+      .sort((a, b) => {
+        const aScore = this.scoreMatch(a.display, q);
+        const bScore = this.scoreMatch(b.display, q);
+        return bScore - aScore;
+      });
+
+    return allMatches;
   }
 
   async getSuggestions(query) {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+
     if (!query || query.length < 2) return [];
 
-    if (query.length === 2) {
-      const q = query.toLowerCase();
-      const priorityMatches = this.prioritySuggestions.filter(s => s.toLowerCase().includes(q));
-      const siteMatches = this.popularSites.filter(s => s.toLowerCase().includes(q));
-      const googleSuggestions = await this.getGoogleSuggestions(query);
+    const localMatches = this.getLocalMatches(query);
 
-      const merged = [...priorityMatches, ...siteMatches, ...googleSuggestions];
-      const unique = [...new Set(merged)];
-      return unique.slice(0, 8);
+    const partialSiteMatch = this.findSiteByPartialMatch(query);
+    if (partialSiteMatch && !localMatches.some(m => m.text === partialSiteMatch.domain)) {
+      localMatches.unshift({
+        type: 'site',
+        text: partialSiteMatch.domain,
+        display: `${partialSiteMatch.title} — ${partialSiteMatch.domain}`
+      });
     }
 
-    if (!this.hasGoogleResultsForPrefix(query)) {
-      return [];
-    }
+    const googleSuggestionsPromise = this.getGoogleSuggestions(query);
 
-    const q = query.toLowerCase();
-    const priorityMatches = this.prioritySuggestions.filter(s => s.toLowerCase().includes(q));
-    const siteMatches = this.popularSites.filter(s => s.toLowerCase().includes(q));
-    const googleSuggestions = await this.getGoogleSuggestions(query);
+    const googleSuggestions = await googleSuggestionsPromise;
 
-    const merged = [...priorityMatches, ...siteMatches, ...googleSuggestions];
-    const unique = [...new Set(merged)];
+    const googleObjects = googleSuggestions.map(text => {
+      if (this.isSiteUrl(text)) {
+        const siteInfo = this.findSiteInfo(text);
+        if (siteInfo) {
+          return {
+            type: 'site',
+            text: siteInfo.domain,
+            display: `${siteInfo.title} — ${siteInfo.domain}`
+          };
+        }
+        return {
+          type: 'site',
+          text: text,
+          display: text
+        };
+      }
+      return {
+        type: 'search',
+        text: text,
+        display: text
+      };
+    });
+
+    const merged = [...localMatches, ...googleObjects];
+
+    const seen = new Set();
+    const unique = merged.filter(item => {
+      const key = item.text.toLowerCase();
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
 
     return unique.slice(0, 8);
   }

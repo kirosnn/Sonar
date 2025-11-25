@@ -10,7 +10,7 @@ export class TabManager {
   initialize() {
     this.tabs.push({
       id: 1,
-      url: 'new-tab',
+      url: 'sonar://new-tab',
       title: 'New Tab'
     });
 
@@ -19,7 +19,12 @@ export class TabManager {
       this.setupTabListeners(initialTab);
     }
 
+    this.updateTabFavicon(1, 'sonar://new-tab');
     this.positionAddTabButton();
+
+    window.addEventListener('resize', () => {
+      requestAnimationFrame(() => this.updateTabsLayout());
+    });
   }
 
   async createNewTab() {
@@ -28,7 +33,7 @@ export class TabManager {
 
     this.tabs.push({
       id: newTabId,
-      url: 'new-tab',
+      url: 'sonar://new-tab',
       title: 'New Tab'
     });
 
@@ -38,8 +43,13 @@ export class TabManager {
     newTabElement.className = 'tab';
     newTabElement.setAttribute('data-tab-id', newTabId);
     newTabElement.innerHTML = `
+      <img class="tab-favicon" src="" alt="">
       <span class="tab-title">New Tab</span>
-      <button class="tab-close">×</button>
+      <button class="tab-close">
+        <svg width="16" height="16" viewBox="0 0 16 16">
+          <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
     `;
 
     if (tabsContainer) {
@@ -51,8 +61,10 @@ export class TabManager {
     }
 
     this.setupTabListeners(newTabElement);
+    this.updateTabFavicon(newTabId, 'sonar://new-tab');
     await this.webviewManager.createWebview(newTabId);
     this.switchToTab(newTabId);
+    this.updateTabsLayout();
   }
 
   setupTabListeners(tabElement) {
@@ -60,6 +72,20 @@ export class TabManager {
       if (!e.target.classList.contains('tab-close')) {
         const tabId = parseInt(tabElement.getAttribute('data-tab-id'));
         this.switchToTab(tabId);
+      }
+    });
+
+    tabElement.addEventListener('mousedown', (e) => {
+      if (e.button === 1) {
+        e.preventDefault();
+        const tabId = parseInt(tabElement.getAttribute('data-tab-id'));
+        this.closeTab(tabId);
+      }
+    });
+
+    tabElement.addEventListener('auxclick', (e) => {
+      if (e.button === 1) {
+        e.preventDefault();
       }
     });
 
@@ -72,17 +98,20 @@ export class TabManager {
   }
 
   switchToTab(tabId) {
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.classList.remove('active');
-      if (parseInt(tab.getAttribute('data-tab-id')) === tabId) {
-        tab.classList.add('active');
-      }
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.tab').forEach(tab => {
+        const isActive = parseInt(tab.getAttribute('data-tab-id')) === tabId;
+        if (isActive) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
     });
 
     this.webviewManager.switchWebview(tabId);
     this.activeTabId = tabId;
     this.updateUrlBar();
-    this.positionAddTabButton();
   }
 
   closeTab(tabId) {
@@ -107,7 +136,7 @@ export class TabManager {
     }
 
     if (tabElement) tabElement.remove();
-    this.positionAddTabButton();
+    this.updateTabsLayout();
   }
 
   updateTabTitle(tabId, title) {
@@ -122,6 +151,55 @@ export class TabManager {
       if (titleSpan) {
         titleSpan.textContent = title;
       }
+    }
+  }
+
+  updateTabFavicon(tabId, url) {
+    const tabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+    if (!tabElement) return;
+
+    const favicon = tabElement.querySelector('.tab-favicon');
+    if (!favicon) return;
+
+    console.log('updateTabFavicon called with URL:', url);
+
+    if (!url || url === 'new-tab' || url.includes('new-tab.html') || url.startsWith('sonar://new-tab')) {
+      const isDark = this.themeManager.isDarkTheme();
+      const faviconName = isDark ? 'white.ico' : 'black.ico';
+      const newTabFaviconPath = `sonar://new-tab/icons/${faviconName}`;
+      console.log('Setting new-tab favicon:', newTabFaviconPath, 'isDark:', isDark);
+      favicon.src = newTabFaviconPath;
+      favicon.classList.add('visible');
+
+      favicon.onerror = () => {
+        console.log('New tab favicon failed to load');
+        favicon.classList.remove('visible');
+        favicon.src = '';
+      };
+
+      favicon.onload = () => {
+        console.log('New tab favicon loaded successfully');
+      };
+      return;
+    }
+
+    try {
+      const urlObj = new URL(url);
+      const faviconUrl = `${urlObj.origin}/favicon.ico`;
+      console.log('Setting website favicon:', faviconUrl);
+
+      favicon.src = faviconUrl;
+      favicon.classList.add('visible');
+
+      favicon.onerror = () => {
+        console.log('Website favicon failed to load:', faviconUrl);
+        favicon.classList.remove('visible');
+        favicon.src = '';
+      };
+    } catch (e) {
+      console.log('Error parsing URL:', e);
+      favicon.classList.remove('visible');
+      favicon.src = '';
     }
   }
 
@@ -140,6 +218,7 @@ export class TabManager {
     const tab = this.tabs.find(t => t.id === tabId);
     if (tab) {
       tab.url = url;
+      this.updateTabFavicon(tabId, url);
       if (tabId === this.activeTabId) {
         this.updateUrlBar();
       }
@@ -150,14 +229,15 @@ export class TabManager {
     const tab = this.tabs.find(t => t.id === this.activeTabId);
     const urlBar = document.getElementById('url-bar');
     if (tab && urlBar) {
-      if (tab.url === 'new-tab' || tab.url.includes('new-tab.html') || tab.url.startsWith('sonar://new-tab')) {
-        urlBar.value = '';
+      const url = tab.url || '';
+      const title = tab.title || '';
+      const navigationManager = this.getNavigationManager();
+
+      if (navigationManager) {
+        navigationManager.setUrlBarValue(url, title);
       } else {
-        const url = tab.url || '';
-        const title = tab.title || '';
-        const navigationManager = this.getNavigationManager();
-        if (navigationManager) {
-          navigationManager.setUrlBarValue(url, title);
+        if (tab.url === 'new-tab' || tab.url.includes('new-tab.html') || tab.url.startsWith('sonar://new-tab')) {
+          urlBar.value = '';
         } else {
           urlBar.value = url;
         }
@@ -173,15 +253,56 @@ export class TabManager {
     this.navigationManager = navigationManager;
   }
 
+  updateTabsLayout() {
+    const tabsContainer = document.getElementById('tabs-container');
+    if (!tabsContainer) return;
+
+    const tabCount = this.tabs.length;
+    const containerWidth = tabsContainer.offsetWidth;
+    const addBtnWidth = 36;
+    const availableWidth = containerWidth - addBtnWidth;
+    const tabGap = 4;
+    const totalGapWidth = (tabCount - 1) * tabGap;
+    const usableWidth = availableWidth - totalGapWidth;
+
+    let idealTabWidth = usableWidth / tabCount;
+
+    const maxTabWidth = 240;
+    const minTabWidthWithTitle = 120;
+    const minTabWidthIconOnly = 80;
+    const minTabWidthFaviconOnly = 40;
+
+    tabsContainer.classList.remove('many-tabs', 'lots-of-tabs', 'very-many-tabs', 'extreme-tabs');
+
+    if (idealTabWidth >= maxTabWidth) {
+      return;
+    } else if (idealTabWidth >= minTabWidthWithTitle) {
+      tabsContainer.classList.add('many-tabs');
+    } else if (idealTabWidth >= minTabWidthIconOnly) {
+      tabsContainer.classList.add('lots-of-tabs');
+    } else if (idealTabWidth >= minTabWidthFaviconOnly) {
+      tabsContainer.classList.add('very-many-tabs');
+    } else {
+      tabsContainer.classList.add('extreme-tabs');
+    }
+  }
+
   positionAddTabButton() {
     const tabsContainer = document.getElementById('tabs-container');
     const addBtn = document.getElementById('add-tab-btn');
     if (tabsContainer && addBtn) {
       tabsContainer.appendChild(addBtn);
     }
+    this.updateTabsLayout();
   }
 
   getActiveTab() {
     return this.tabs.find(t => t.id === this.activeTabId);
+  }
+
+  refreshAllFavicons() {
+    this.tabs.forEach(tab => {
+      this.updateTabFavicon(tab.id, tab.url);
+    });
   }
 }

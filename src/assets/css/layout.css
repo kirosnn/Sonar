@@ -1,0 +1,46 @@
+.browser-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    padding-top: 12px;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    height: 52px;
+    flex-shrink: 0;
+}
+
+.content-area {
+    flex: 1;
+    position: relative;
+    background-color: var(--bg-primary);
+    overflow: hidden;
+    min-height: 0;
+}
+
+.webview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: var(--bg-primary);
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    will-change: opacity;
+}
+
+.webview.active {
+    display: flex;
+    opacity: 1;
+}

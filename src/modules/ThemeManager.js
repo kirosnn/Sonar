@@ -1,6 +1,7 @@
 export class ThemeManager {
   constructor() {
     this.themeColors = null;
+    this.themeChangeListeners = [];
   }
 
   async initialize() {
@@ -13,8 +14,17 @@ export class ThemeManager {
       window.electronAPI.onThemeChanged((colors) => {
         this.themeColors = colors;
         this.applyTheme(colors);
+        this.notifyThemeChange();
       });
     }
+  }
+
+  onThemeChange(callback) {
+    this.themeChangeListeners.push(callback);
+  }
+
+  notifyThemeChange() {
+    this.themeChangeListeners.forEach(callback => callback());
   }
 
   applyTheme(colors) {
@@ -34,5 +44,12 @@ export class ThemeManager {
 
   getThemeColors() {
     return this.themeColors;
+  }
+
+  isDarkTheme() {
+    if (this.themeColors?.isDark !== undefined) {
+      return this.themeColors.isDark;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 }

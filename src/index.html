@@ -11,8 +11,13 @@
         <div class="tabs-bar">
             <div class="tabs-container" id="tabs-container">
                 <div class="tab active" data-tab-id="1">
+                    <img class="tab-favicon" src="" alt="">
                     <span class="tab-title">New Tab</span>
-                    <button class="tab-close">×</button>
+                    <button class="tab-close">
+                        <svg width="16" height="16" viewBox="0 0 16 16">
+                            <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
                 </div>
                 <button id="add-tab-btn" class="add-tab-btn" data-tooltip="New Tab">+</button>
             </div>
@@ -47,6 +52,7 @@
             </div>
 
             <div class="url-bar-container">
+                <img id="site-favicon" class="site-favicon" src="" alt="">
                 <input type="text" id="url-bar" class="url-bar" placeholder="Search or enter address" autocomplete="off">
                 <div id="suggestions-dropdown" class="suggestions-dropdown hidden"></div>
             </div>
