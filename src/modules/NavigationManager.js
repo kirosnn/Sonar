@@ -1,4 +1,5 @@
 import { SuggestionsManager } from './SuggestionsManager.js';
+import { VoiceInputManager } from './VoiceInputManager.js';
 
 export class NavigationManager {
   constructor(tabManager, webviewManager) {
@@ -12,6 +13,28 @@ export class NavigationManager {
     this.selectedSuggestionIndex = -1;
     this.currentSuggestions = [];
     this.debounceTimer = null;
+    this.voiceActive = false;
+    this.voiceInputManager = new VoiceInputManager();
+    this.setupVoiceCallbacks();
+  }
+
+  setupVoiceCallbacks() {
+    this.voiceInputManager.onRecordingStart = () => {
+      console.log('Recording started');
+    };
+
+    this.voiceInputManager.onRecordingStop = () => {
+      console.log('Recording stopped');
+    };
+
+    this.voiceInputManager.onTranscriptionComplete = (text) => {
+      this.handleVoiceTranscription(text);
+    };
+
+    this.voiceInputManager.onError = (error) => {
+      console.error('Voice input error:', error);
+      this.toggleVoiceInput();
+    };
   }
 
   initialize() {
@@ -36,6 +59,42 @@ export class NavigationManager {
     if (addTabBtn) {
       addTabBtn.addEventListener('click', () => this.tabManager.createNewTab());
     }
+
+    const micBtn = document.getElementById('mic-btn');
+    if (micBtn) {
+      micBtn.addEventListener('click', () => this.toggleVoiceInput());
+    }
+  }
+
+  toggleVoiceInput() {
+    this.voiceActive = !this.voiceActive;
+    const micBtn = document.getElementById('mic-btn');
+
+    if (this.voiceActive) {
+      micBtn.classList.add('active');
+      this.urlBar.classList.add('voice-active');
+      this.urlBar.placeholder = 'Listening...';
+      this.hideSuggestions();
+      this.voiceInputManager.startRecording();
+    } else {
+      micBtn.classList.remove('active');
+      this.urlBar.classList.remove('voice-active');
+      this.urlBar.placeholder = 'Search or enter address';
+      this.voiceInputManager.stopRecording();
+    }
+  }
+
+  handleVoiceTranscription(text) {
+    if (text && text.trim().length > 0) {
+      this.urlBar.value = text.trim();
+      this.navigate(text.trim());
+    }
+
+    this.voiceActive = false;
+    const micBtn = document.getElementById('mic-btn');
+    micBtn.classList.remove('active');
+    this.urlBar.classList.remove('voice-active');
+    this.urlBar.placeholder = 'Search or enter address';
   }
 
   handleUrlBarFocus() {
@@ -58,6 +117,10 @@ export class NavigationManager {
     const query = e.target.value;
 
     clearTimeout(this.debounceTimer);
+
+    if (this.voiceActive) {
+      return;
+    }
 
     if (!query || query.length < 2) {
       this.hideSuggestions();

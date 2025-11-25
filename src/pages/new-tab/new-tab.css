@@ -91,6 +91,9 @@ body {
 .search-input::placeholder {
     color: var(--text-secondary);
     font-weight: 400;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 .button-container {

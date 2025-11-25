@@ -2,6 +2,9 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 :root {
@@ -68,10 +71,10 @@ body {
 }
 
 .nav-btn {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     background-color: transparent;
     color: var(--text-primary);
     cursor: pointer;
@@ -83,8 +86,9 @@ body {
 }
 
 .nav-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.5;
 }
 
 .nav-btn:hover {
@@ -140,6 +144,10 @@ body {
     border-bottom: 1px solid transparent;
 }
 
+.url-bar.voice-active {
+    border: 1px solid var(--accent-color);
+}
+
 .action-buttons {
     display: flex;
     gap: 4px;
@@ -172,6 +180,28 @@ body {
 
 .action-btn:active {
     background-color: var(--active-bg);
+}
+
+#mic-btn.active {
+    opacity: 1;
+}
+
+#mic-btn.active:hover {
+    background-color: var(--hover-bg);
+}
+
+#mic-btn.active svg {
+    color: #ff4444;
+    animation: mic-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
 }
 
 .tabs-bar {
