@@ -153,9 +153,24 @@ export class TabManager {
       if (tab.url === 'new-tab' || tab.url.includes('new-tab.html') || tab.url.startsWith('sonar://new-tab')) {
         urlBar.value = '';
       } else {
-        urlBar.value = tab.url || '';
+        const url = tab.url || '';
+        const title = tab.title || '';
+        const navigationManager = this.getNavigationManager();
+        if (navigationManager) {
+          navigationManager.setUrlBarValue(url, title);
+        } else {
+          urlBar.value = url;
+        }
       }
     }
+  }
+
+  getNavigationManager() {
+    return this.navigationManager;
+  }
+
+  setNavigationManager(navigationManager) {
+    this.navigationManager = navigationManager;
   }
 
   positionAddTabButton() {

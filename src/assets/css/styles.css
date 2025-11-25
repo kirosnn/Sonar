@@ -50,6 +50,7 @@ body {
     flex-direction: column;
 }
 
+
 .toolbar {
     display: flex;
     align-items: center;
@@ -67,10 +68,10 @@ body {
 }
 
 .nav-btn {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     background-color: transparent;
     color: var(--text-primary);
     cursor: pointer;
@@ -78,10 +79,17 @@ body {
     align-items: center;
     justify-content: center;
     transition: background-color 0.15s ease;
+    opacity: 0.6;
+}
+
+.nav-btn svg {
+    width: 18px;
+    height: 18px;
 }
 
 .nav-btn:hover {
     background-color: var(--hover-bg);
+    opacity: 1;
 }
 
 .nav-btn:active {
@@ -89,7 +97,7 @@ body {
 }
 
 .nav-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
@@ -97,24 +105,39 @@ body {
     flex: 1;
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .url-bar {
     width: 100%;
     height: 32px;
     padding: 0 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid transparent;
     border-radius: 8px;
     font-size: 14px;
     outline: none;
     background-color: var(--input-bg);
     color: var(--input-text);
-    transition: all 0.15s ease;
+    transition: opacity 0.2s ease, border-radius 0.15s ease, border 0.15s ease;
+    opacity: 0.6;
+    position: relative;
+    z-index: 1001;
+}
+
+.url-bar:hover {
+    opacity: 0.8;
 }
 
 .url-bar:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px var(--accent-color-20);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+    opacity: 1;
+}
+
+.url-bar.has-suggestions {
+    border: 1px solid var(--border-color);
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid transparent;
 }
 
 .action-buttons {
@@ -134,10 +157,17 @@ body {
     align-items: center;
     justify-content: center;
     transition: background-color 0.15s ease;
+    opacity: 0.6;
+}
+
+.action-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 .action-btn:hover {
     background-color: var(--hover-bg);
+    opacity: 1;
 }
 
 .action-btn:active {
@@ -283,4 +313,63 @@ body {
     to {
         transform: rotate(360deg);
     }
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 0;
+    right: 0;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: none;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1000;
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+    transform-origin: top;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                max-height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+.suggestions-dropdown.hidden {
+    opacity: 0;
+    transform: scaleY(0.95) translateY(-8px);
+    max-height: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.suggestion-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.1s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+    border-radius: 0 0 8px 8px;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+    background-color: var(--hover-bg);
+}
+
+.suggestion-item:active {
+    background-color: var(--active-bg);
+    transition: background-color 0.05s ease;
 }

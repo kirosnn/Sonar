@@ -90,6 +90,11 @@ function createWindow() {
 
   mainWindow.maximize();
 
+  // Open DevTools in dev mode
+  if (process.argv.includes('--dev')) {
+    mainWindow.webContents.openDevTools();
+  }
+
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
