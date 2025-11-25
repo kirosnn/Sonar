@@ -45,3 +45,8 @@ body {
     overflow: hidden;
     background-color: var(--bg-primary);
 }
+
+::selection {
+    background-color: var(--accent-color-20);
+    color: var(--accent-color);
+}

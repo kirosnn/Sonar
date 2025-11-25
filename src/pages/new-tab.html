@@ -10,8 +10,9 @@
 <body>
     <div class="container">
 
-        <div class="search-box">
-            <input type="text" class="search-input" placeholder="Search anything or enter an address..." id="search-input">
+        <div class="search-box" id="search-box">
+            <input type="text" class="search-input" placeholder="Search anything or enter an address..." id="search-input" autocomplete="off">
+            <div id="suggestions-dropdown" class="suggestions-dropdown hidden"></div>
             <div class="mode-selector">
                 <button class="mode-button active" data-mode="search">
                     <svg class="mode-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -39,9 +40,17 @@
 
     <script>
         const searchInput = document.getElementById('search-input');
-        const quickLinks = document.querySelectorAll('.quick-link');
+        const searchBox = document.getElementById('search-box');
+        const suggestionsDropdown = document.getElementById('suggestions-dropdown');
         const modeButtons = document.querySelectorAll('.mode-button');
         let currentMode = 'search';
+        let selectedSuggestionIndex = -1;
+        let currentSuggestions = [];
+        let debounceTimer = null;
+        let prioritySuggestions = [];
+        let popularSites = [];
+        const googleCache = new Map();
+        const pendingRequests = new Map();
 
         function loadSavedMode() {
             const savedMode = localStorage.getItem('sonar-search-mode');
@@ -75,7 +84,364 @@
                 currentMode = button.getAttribute('data-mode');
                 localStorage.setItem('sonar-search-mode', currentMode);
                 updatePlaceholder();
+                hideSuggestions();
             });
+        });
+
+        function isSiteUrl(text) {
+            const urlPattern = /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+            return urlPattern.test(text) || text.includes('.');
+        }
+
+        function findSiteInfo(domain) {
+            const cleanDomain = domain.toLowerCase().trim();
+            return popularSites.find(site =>
+                site.domain.toLowerCase() === cleanDomain ||
+                site.domain.toLowerCase().startsWith(cleanDomain + '.') ||
+                cleanDomain === site.domain.toLowerCase().replace(/\.[^.]+$/, '')
+            );
+        }
+
+        function findSiteByPartialMatch(query) {
+            if (!query || query.length < 3) return null;
+            const q = query.toLowerCase().trim();
+            return popularSites.find(site => {
+                const domainWithoutTld = site.domain.toLowerCase().split('.')[0];
+                return domainWithoutTld === q ||
+                    site.domain.toLowerCase() === q + '.com' ||
+                    site.domain.toLowerCase() === q + '.fr' ||
+                    site.domain.toLowerCase() === q + '.org' ||
+                    site.domain.toLowerCase() === q + '.net';
+            });
+        }
+
+        function scoreMatch(text, query) {
+            const textLower = text.toLowerCase();
+            const queryLower = query.toLowerCase();
+            if (textLower === queryLower) return 1000;
+            if (textLower.startsWith(queryLower + ' ')) return 900;
+            if (textLower.startsWith(queryLower)) return 800;
+            if (textLower.split(' ').some(word => word.startsWith(queryLower))) return 700;
+            if (textLower.includes(' ' + queryLower)) return 600;
+            if (textLower.includes(queryLower)) return 500;
+            return 0;
+        }
+
+        function getLocalMatches(query) {
+            if (!query || query.length < 2) return [];
+            const q = query.toLowerCase();
+
+            const priorityMatches = prioritySuggestions
+                .map(text => ({ text, score: scoreMatch(text, q) }))
+                .filter(item => item.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .map(item => ({ type: 'search', text: item.text, display: item.text }));
+
+            const siteMatches = popularSites
+                .map(site => {
+                    const domainScore = scoreMatch(site.domain, q);
+                    const titleScore = scoreMatch(site.title, q);
+                    const maxScore = Math.max(domainScore, titleScore);
+                    return { site, score: maxScore };
+                })
+                .filter(item => item.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .map(item => ({ type: 'site', text: item.site.domain, display: `${item.site.title} — ${item.site.domain}` }));
+
+            const allMatches = [...priorityMatches, ...siteMatches]
+                .sort((a, b) => scoreMatch(b.display, q) - scoreMatch(a.display, q));
+
+            return allMatches;
+        }
+
+        async function getGoogleSuggestions(query) {
+            if (!query || query.length < 2) return [];
+            if (googleCache.has(query)) return googleCache.get(query);
+            if (pendingRequests.has(query)) return pendingRequests.get(query);
+
+            const requestPromise = (async () => {
+                try {
+                    const url = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(query)}`;
+                    const response = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(3000) });
+                    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                    const data = await response.json();
+                    const suggestions = Array.isArray(data[1]) ? data[1] : [];
+                    googleCache.set(query, suggestions);
+                    if (googleCache.size > 100) {
+                        const firstKey = googleCache.keys().next().value;
+                        googleCache.delete(firstKey);
+                    }
+                    return suggestions;
+                } catch (error) {
+                    return [];
+                } finally {
+                    pendingRequests.delete(query);
+                }
+            })();
+
+            pendingRequests.set(query, requestPromise);
+            return requestPromise;
+        }
+
+        function highlightMatches(text, query) {
+            if (!query || !text) return text;
+            const queryLower = query.toLowerCase();
+            const textLower = text.toLowerCase();
+            const index = textLower.indexOf(queryLower);
+            if (index === -1) return text;
+            const before = text.substring(0, index);
+            const match = text.substring(index, index + query.length);
+            const after = text.substring(index + query.length);
+            return `${before}<span class="highlight">${match}</span>${after}`;
+        }
+
+        async function getSuggestions(query) {
+            if (!query || query.length < 2) return [];
+            const localMatches = getLocalMatches(query);
+            const partialSiteMatch = findSiteByPartialMatch(query);
+            if (partialSiteMatch && !localMatches.some(m => m.text === partialSiteMatch.domain)) {
+                localMatches.unshift({ type: 'site', text: partialSiteMatch.domain, display: `${partialSiteMatch.title} — ${partialSiteMatch.domain}` });
+            }
+            const googleSuggestions = await getGoogleSuggestions(query);
+            const googleObjects = googleSuggestions.map(text => {
+                if (isSiteUrl(text)) {
+                    const siteInfo = findSiteInfo(text);
+                    if (siteInfo) {
+                        return { type: 'site', text: siteInfo.domain, display: `${siteInfo.title} — ${siteInfo.domain}` };
+                    }
+                    return { type: 'site', text, display: text };
+                }
+                return { type: 'search', text, display: text };
+            });
+            const merged = [...localMatches, ...googleObjects];
+            const seen = new Set();
+            const unique = merged.filter(item => {
+                const key = item.text.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            return unique.slice(0, 8);
+        }
+
+        function showSuggestions(suggestions) {
+            currentSuggestions = suggestions;
+            selectedSuggestionIndex = -1;
+            suggestionsDropdown.innerHTML = '';
+
+            const query = searchInput.value;
+
+            suggestions.forEach((suggestion) => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+
+                const displayText = suggestion.display;
+                const navigationText = suggestion.text;
+                const type = suggestion.type;
+
+                if (type === 'site') {
+                    const favicon = document.createElement('img');
+                    favicon.className = 'suggestion-favicon';
+                    const domain = navigationText;
+                    try {
+                        const faviconUrl = domain.startsWith('http') ? `${new URL(domain).origin}/favicon.ico` : `https://${domain}/favicon.ico`;
+                        favicon.src = faviconUrl;
+                        favicon.onerror = () => {
+                            favicon.style.display = 'none';
+                            const searchIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                            searchIcon.setAttribute('class', 'suggestion-icon');
+                            searchIcon.setAttribute('width', '16');
+                            searchIcon.setAttribute('height', '16');
+                            searchIcon.setAttribute('viewBox', '0 0 16 16');
+                            searchIcon.setAttribute('fill', 'none');
+                            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                            path.setAttribute('d', 'M7 12C9.76142 12 12 9.76142 12 7C12 4.23858 9.76142 2 7 2C4.23858 2 2 4.23858 2 7C2 9.76142 4.23858 12 7 12Z');
+                            path.setAttribute('stroke', 'currentColor');
+                            path.setAttribute('stroke-width', '1.5');
+                            const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                            path2.setAttribute('d', 'M10.5 10.5L14 14');
+                            path2.setAttribute('stroke', 'currentColor');
+                            path2.setAttribute('stroke-width', '1.5');
+                            path2.setAttribute('stroke-linecap', 'round');
+                            searchIcon.appendChild(path);
+                            searchIcon.appendChild(path2);
+                            item.insertBefore(searchIcon, item.firstChild);
+                        };
+                        favicon.onload = () => {
+                            favicon.classList.add('visible');
+                        };
+                        item.appendChild(favicon);
+                    } catch (e) {
+                        const searchIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        searchIcon.setAttribute('class', 'suggestion-icon');
+                        searchIcon.setAttribute('width', '16');
+                        searchIcon.setAttribute('height', '16');
+                        searchIcon.setAttribute('viewBox', '0 0 16 16');
+                        searchIcon.setAttribute('fill', 'none');
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        path.setAttribute('d', 'M7 12C9.76142 12 12 9.76142 12 7C12 4.23858 9.76142 2 7 2C4.23858 2 2 4.23858 2 7C2 9.76142 4.23858 12 7 12Z');
+                        path.setAttribute('stroke', 'currentColor');
+                        path.setAttribute('stroke-width', '1.5');
+                        const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        path2.setAttribute('d', 'M10.5 10.5L14 14');
+                        path2.setAttribute('stroke', 'currentColor');
+                        path2.setAttribute('stroke-width', '1.5');
+                        path2.setAttribute('stroke-linecap', 'round');
+                        searchIcon.appendChild(path);
+                        searchIcon.appendChild(path2);
+                        item.appendChild(searchIcon);
+                    }
+                } else {
+                    const searchIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    searchIcon.setAttribute('class', 'suggestion-icon');
+                    searchIcon.setAttribute('width', '16');
+                    searchIcon.setAttribute('height', '16');
+                    searchIcon.setAttribute('viewBox', '0 0 16 16');
+                    searchIcon.setAttribute('fill', 'none');
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', 'M7 12C9.76142 12 12 9.76142 12 7C12 4.23858 9.76142 2 7 2C4.23858 2 2 4.23858 2 7C2 9.76142 4.23858 12 7 12Z');
+                    path.setAttribute('stroke', 'currentColor');
+                    path.setAttribute('stroke-width', '1.5');
+                    const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path2.setAttribute('d', 'M10.5 10.5L14 14');
+                    path2.setAttribute('stroke', 'currentColor');
+                    path2.setAttribute('stroke-width', '1.5');
+                    path2.setAttribute('stroke-linecap', 'round');
+                    searchIcon.appendChild(path);
+                    searchIcon.appendChild(path2);
+                    item.appendChild(searchIcon);
+                }
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'suggestion-text';
+                textSpan.innerHTML = highlightMatches(displayText, query);
+                item.appendChild(textSpan);
+
+                item.addEventListener('click', () => {
+                    navigateToUrl(navigationText);
+                    hideSuggestions();
+                });
+                suggestionsDropdown.appendChild(item);
+            });
+
+            const top = searchInput.offsetTop + searchInput.offsetHeight;
+            suggestionsDropdown.style.top = `${top}px`;
+
+            requestAnimationFrame(() => {
+                suggestionsDropdown.classList.remove('hidden');
+            });
+        }
+
+        function hideSuggestions() {
+            suggestionsDropdown.classList.add('hidden');
+            selectedSuggestionIndex = -1;
+            currentSuggestions = [];
+        }
+
+        function selectNextSuggestion() {
+            const items = suggestionsDropdown.querySelectorAll('.suggestion-item');
+            if (items.length === 0) return;
+            if (selectedSuggestionIndex >= 0) {
+                items[selectedSuggestionIndex].classList.remove('selected');
+            }
+            selectedSuggestionIndex = (selectedSuggestionIndex + 1) % items.length;
+            items[selectedSuggestionIndex].classList.add('selected');
+            const suggestion = currentSuggestions[selectedSuggestionIndex];
+            searchInput.value = suggestion.text;
+        }
+
+        function selectPreviousSuggestion() {
+            const items = suggestionsDropdown.querySelectorAll('.suggestion-item');
+            if (items.length === 0) return;
+            if (selectedSuggestionIndex >= 0) {
+                items[selectedSuggestionIndex].classList.remove('selected');
+            }
+            selectedSuggestionIndex = selectedSuggestionIndex <= 0 ? items.length - 1 : selectedSuggestionIndex - 1;
+            items[selectedSuggestionIndex].classList.add('selected');
+            const suggestion = currentSuggestions[selectedSuggestionIndex];
+            searchInput.value = suggestion.text;
+        }
+
+        function navigateToUrl(input) {
+            let url = input.trim();
+            if (currentMode === 'sonar') {
+                url = 'sonar://search?q=' + encodeURIComponent(url);
+                window.location.href = url;
+                return;
+            }
+            if (url.startsWith('sonar://')) {
+                window.location.href = url;
+            } else if (url.includes('.') && !url.includes(' ')) {
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                window.location.href = url;
+            } else {
+                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+                window.location.href = url;
+            }
+        }
+
+        async function initializeSuggestionsData() {
+            try {
+                const [priorityRes, sitesRes] = await Promise.all([
+                    fetch('sonar://data/priority-suggestions.json'),
+                    fetch('sonar://data/popular-sites.json')
+                ]);
+                prioritySuggestions = await priorityRes.json();
+                popularSites = await sitesRes.json();
+            } catch (e) {
+                prioritySuggestions = [];
+                popularSites = [];
+            }
+        }
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (currentMode !== 'search') return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && currentSuggestions[selectedSuggestionIndex]) {
+                    const suggestion = currentSuggestions[selectedSuggestionIndex];
+                    const navigationText = suggestion.text;
+                    navigateToUrl(navigationText);
+                } else {
+                    const url = e.target.value;
+                    navigateToUrl(url);
+                }
+                hideSuggestions();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectNextSuggestion();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectPreviousSuggestion();
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            if (currentMode !== 'search') return;
+            const query = e.target.value;
+            clearTimeout(debounceTimer);
+            if (!query || query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            debounceTimer = setTimeout(async () => {
+                const suggestions = await getSuggestions(query);
+                if (suggestions.length > 0) {
+                    showSuggestions(suggestions);
+                } else {
+                    hideSuggestions();
+                }
+            }, 150);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchBox.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
+                hideSuggestions();
+            }
         });
 
         searchInput.addEventListener('keypress', (e) => {
@@ -104,14 +470,7 @@
             }
         });
 
-        quickLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                const url = link.getAttribute('data-url');
-                if (url) {
-                    window.location.href = url;
-                }
-            });
-        });
+        initializeSuggestionsData();
 
         searchInput.focus();
     </script>
