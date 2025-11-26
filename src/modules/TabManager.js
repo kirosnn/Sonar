@@ -5,6 +5,7 @@ export class TabManager {
     this.tabCounter = 1;
     this.webviewManager = webviewManager;
     this.themeManager = themeManager;
+    this.audioStates = new Map();
   }
 
   initialize() {
@@ -127,6 +128,7 @@ export class TabManager {
     const tabIndex = this.tabs.findIndex(t => t.id === tabId);
     this.webviewManager.removeWebview(tabId);
     this.tabs.splice(tabIndex, 1);
+    this.audioStates.delete(tabId);
 
     const tabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
 
@@ -160,6 +162,10 @@ export class TabManager {
 
     const favicon = tabElement.querySelector('.tab-favicon');
     if (!favicon) return;
+
+    if (favicon.classList.contains('audio-playing')) {
+      return;
+    }
 
     console.log('updateTabFavicon called with URL:', url);
 
@@ -210,6 +216,36 @@ export class TabManager {
         tabElement.classList.add('loading');
       } else {
         tabElement.classList.remove('loading');
+      }
+    }
+  }
+
+  updateTabAudioState(tabId, hasMedia) {
+    const previousState = this.audioStates.get(tabId);
+    if (previousState === hasMedia) return;
+
+    this.audioStates.set(tabId, hasMedia);
+    const tabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+    if (!tabElement) return;
+
+    const favicon = tabElement.querySelector('.tab-favicon');
+    if (!favicon) return;
+
+    if (hasMedia) {
+      const currentSrc = favicon.src;
+      favicon.src = 'assets/speaker.svg';
+      favicon.classList.add('visible', 'audio-playing');
+      favicon.dataset.originalSrc = currentSrc;
+    } else {
+      favicon.classList.remove('audio-playing');
+      if (favicon.dataset.originalSrc) {
+        favicon.src = favicon.dataset.originalSrc;
+        delete favicon.dataset.originalSrc;
+      } else {
+        const tab = this.tabs.find(t => t.id === tabId);
+        if (tab) {
+          this.updateTabFavicon(tabId, tab.url);
+        }
       }
     }
   }

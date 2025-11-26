@@ -13,7 +13,9 @@
     "appId": "fr.kirosnn.sonar",
     "productName": "Sonar",
     "win": {
-      "target": ["portable"],
+      "target": [
+        "portable"
+      ],
       "icon": "build/icon.png"
     },
     "portable": {
@@ -33,6 +35,7 @@
   },
   "dependencies": {
     "assemblyai": "^4.19.0",
+    "better-sqlite3": "^12.4.6",
     "dotenv": "^17.2.3"
   }
 }

@@ -40,6 +40,7 @@ export class WebviewManager {
       const tabId = parseInt(webview.id.split('-')[1]);
       console.log(`Webview ${tabId} stopped loading`);
       this.tabManager.updateTabLoadingState(tabId, false);
+      this.checkForMediaElements(webview, tabId);
     });
 
     webview.addEventListener('did-fail-load', (e) => {
@@ -74,6 +75,24 @@ export class WebviewManager {
 
     webview.addEventListener('will-navigate', (e) => {
     });
+  }
+
+  async checkForMediaElements(webview, tabId) {
+    if (!webview || !webview.parentNode) return;
+
+    try {
+      const hasMedia = await webview.executeJavaScript(`
+        (function() {
+          const audioElements = document.querySelectorAll('audio');
+          const videoElements = document.querySelectorAll('video');
+          return audioElements.length > 0 || videoElements.length > 0;
+        })();
+      `);
+
+      this.tabManager.updateTabAudioState(tabId, hasMedia);
+    } catch (error) {
+      console.log(`Error checking media elements for tab ${tabId}:`, error);
+    }
   }
 
   switchWebview(tabId) {

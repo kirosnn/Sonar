@@ -170,6 +170,9 @@
     white-space: nowrap;
     overflow: hidden;
     position: relative;
+    line-height: 1;
+    display: flex;
+    align-items: center;
     mask-image: linear-gradient(to right, black calc(100% - 20px), transparent 100%);
     -webkit-mask-image: linear-gradient(to right, black calc(100% - 20px), transparent 100%);
 }
@@ -244,4 +247,12 @@
 
 .tab.loading .tab-favicon.visible {
     opacity: 0;
+}
+
+.tab-favicon.audio-playing {
+    opacity: 1;
+}
+
+.tab-favicon.audio-playing::after {
+    display: none;
 }
