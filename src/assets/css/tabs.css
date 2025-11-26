@@ -5,7 +5,7 @@
     height: 48px;
     padding: 0 8px;
     flex-shrink: 0;
-    gap: 6px;
+    gap: 2px;
 }
 
 .tabs-container {
@@ -16,7 +16,7 @@
     overflow-y: hidden;
     align-items: center;
     min-width: 0;
-    padding: 0 4px;
+    padding: 0 2px;
     height: 100%;
 }
 
@@ -43,6 +43,24 @@
     border: 1px solid transparent;
     position: relative;
     margin: 0;
+}
+
+.tab:not(.active)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 16px;
+    width: 1.5px;
+    background-color: var(--border-color);
+    opacity: 0.4;
+}
+
+.tab:not(.active):last-child::after,
+.tab:not(.active):has(+ .tab.active)::after,
+.tab.active + .tab:not(.active)::after {
+    display: none;
 }
 
 .tabs-container.many-tabs .tab {
@@ -174,7 +192,7 @@
 
 .tab.active .tab-close {
     display: flex;
-    opacity: 0.6;
+    opacity: 1;
 }
 
 .tab-close svg {
@@ -184,23 +202,23 @@
 
 .tab-close:hover {
     background-color: var(--active-bg);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     opacity: 1;
 }
 
 .add-tab-btn {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border: none;
     border-radius: 6px;
     background-color: transparent;
-    color: var(--text-primary);
-    font-size: 18px;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.15s ease;
+    margin-left: 0;
 }
 
 .add-tab-btn:hover {

@@ -13,7 +13,8 @@
     "appId": "fr.kirosnn.sonar",
     "productName": "Sonar",
     "win": {
-      "target": ["portable"]
+      "target": ["portable"],
+      "icon": "build/icon.png"
     },
     "portable": {
       "artifactName": "Sonar.exe"
