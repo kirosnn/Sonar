@@ -1,41 +1,96 @@
 {
   "name": "sonar",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A fast, minimalist Windows browser designed for smooth performance, visual clarity, and privacy by default.",
   "main": "src/main.js",
+  "author": {
+    "name": "kirosnn"
+  },
+  "license": "Apache-2.0",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
     "build": "electron-builder --win portable",
-    "build:installer": "electron-builder --win nsis"
+    "build:installer": "electron-builder --win nsis",
+    "build:all": "electron-builder --win"
   },
   "build": {
     "appId": "fr.kirosnn.sonar",
     "productName": "Sonar",
+    "copyright": "Copyright © 2025 kirosnn",
+    "buildVersion": "0.1.0",
+    "compression": "normal",
+    "asar": true,
     "win": {
       "target": [
-        "portable"
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        },
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.ico",
+      "executableName": "Sonar",
+      "requestedExecutionLevel": "asInvoker",
+      "signAndEditExecutable": true,
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "legalTrademarks": "Sonar",
+      "fileAssociations": [
+        {
+          "ext": "html",
+          "name": "HTML Document",
+          "role": "Viewer"
+        },
+        {
+          "ext": "htm",
+          "name": "HTML Document",
+          "role": "Viewer"
+        }
+      ]
     },
     "portable": {
-      "artifactName": "Sonar.exe"
+      "artifactName": "SonarPortable.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Sonar",
+      "artifactName": "SonarSetup.${ext}",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "license": "LICENSE",
+      "runAfterFinish": true,
+      "menuCategory": true,
+      "displayLanguageSelector": false
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources",
+        "to": "resources",
+        "filter": ["**/*"]
+      }
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "extraMetadata": {
+      "main": "src/main.js"
     }
   },
-  "keywords": [
-    "browser",
-    "electron",
-    "sonar"
-  ],
-  "author": "kirosnn",
-  "license": "MIT",
   "devDependencies": {
     "electron": "^28.0.0",
     "electron-builder": "^24.9.1"
-  },
-  "dependencies": {
-    "assemblyai": "^4.19.0",
-    "better-sqlite3": "^12.4.6",
-    "dotenv": "^17.2.3"
   }
 }
